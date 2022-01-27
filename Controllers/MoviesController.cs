@@ -24,24 +24,24 @@ namespace MovieApplication.Controllers
         {
             // LINQ gets a list of genres
             // TODO: siin peab olema _context.Category
-            IQueryable<int> genreQuery = from m in _context.Movie
-                                            orderby m.CategoryId
-                                            select m.CategoryId;
+            // IQueryable<int> genreQuery = from m in _context.Category
+            //                                 orderby m.Id
+            //                                 select m.Id;
 
-            var movies = from m in _context.Movie select m;
+            var movies = await _context.Movie.Include(a => a.Category).ToListAsync();
 
-            if(!string.IsNullOrEmpty(searchString)){
-                movies = movies.Where(x => x.Title.Contains(searchString));
-            }
+            // if(!string.IsNullOrEmpty(searchString)){
+            //     movies = movies.Where(x => x.Title.Contains(searchString));
+            // }
 
-            if(movieCategory != 0){
-                movies = movies.Where(u => u.CategoryId == movieCategory);
-            }
+            // if(movieCategory != 0){
+            //     movies = movies.Where(u => u.CategoryId == movieCategory);
+            // }
 
             MovieGenresViewModel movieGenreVM = new MovieGenresViewModel
             {
-                Genres = new SelectList(await genreQuery.Distinct().ToListAsync()),
-                Movies = await movies.ToListAsync()
+                //Categories = new SelectList(await genreQuery.Distinct().ToListAsync()),
+                Movies = movies
             };
 
             return View(movieGenreVM);
@@ -55,7 +55,7 @@ namespace MovieApplication.Controllers
                 return NotFound();
             }
 
-            var movie = await _context.Movie
+            var movie = await _context.Movie.Include(a=> a.Category)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (movie == null)
             {
@@ -68,6 +68,9 @@ namespace MovieApplication.Controllers
         // GET: Movies/Create
         public IActionResult Create()
         {
+            var Categories = new SelectList(_context.Category.ToList(),"Id","Name");
+            ViewData["Categories"] = Categories;
+
             return View();
         }
 
@@ -82,6 +85,7 @@ namespace MovieApplication.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
+
             return View(movie);
         }
 
@@ -98,12 +102,14 @@ namespace MovieApplication.Controllers
             {
                 return NotFound();
             }
+
+            var Categories = new SelectList(_context.Category.ToList(),"Id","Name");
+            ViewData["Categories"] = Categories;
+
             return View(movie);
         }
 
         // POST: Movies/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Title,Year,Description,Rating,CategoryId")] Movie movie)
@@ -144,7 +150,7 @@ namespace MovieApplication.Controllers
                 return NotFound();
             }
 
-            var movie = await _context.Movie
+            var movie = await _context.Movie.Include(a => a.Category)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (movie == null)
             {
