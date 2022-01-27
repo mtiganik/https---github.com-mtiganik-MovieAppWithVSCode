@@ -10,44 +10,22 @@ using MvcMovie.Models;
 
 namespace MovieApplication.Controllers
 {
-    public class MoviesController : Controller
+    public class CategoriesController : Controller
     {
         private readonly MvcMovieContext _context;
 
-        public MoviesController(MvcMovieContext context)
+        public CategoriesController(MvcMovieContext context)
         {
             _context = context;
         }
 
-        // GET: Movies
-        public async Task<IActionResult> Index(int movieCategory, string searchString)
+        // GET: Categories
+        public async Task<IActionResult> Index()
         {
-            // LINQ gets a list of genres
-            // TODO: siin peab olema _context.Category
-            IQueryable<int> genreQuery = from m in _context.Movie
-                                            orderby m.CategoryId
-                                            select m.CategoryId;
-
-            var movies = from m in _context.Movie select m;
-
-            if(!string.IsNullOrEmpty(searchString)){
-                movies = movies.Where(x => x.Title.Contains(searchString));
-            }
-
-            if(movieCategory != 0){
-                movies = movies.Where(u => u.CategoryId == movieCategory);
-            }
-
-            MovieGenresViewModel movieGenreVM = new MovieGenresViewModel
-            {
-                Genres = new SelectList(await genreQuery.Distinct().ToListAsync()),
-                Movies = await movies.ToListAsync()
-            };
-
-            return View(movieGenreVM);
+            return View(await _context.Category.ToListAsync());
         }
 
-        // GET: Movies/Details/5
+        // GET: Categories/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -55,37 +33,39 @@ namespace MovieApplication.Controllers
                 return NotFound();
             }
 
-            var movie = await _context.Movie
+            var category = await _context.Category
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (movie == null)
+            if (category == null)
             {
                 return NotFound();
             }
 
-            return View(movie);
+            return View(category);
         }
 
-        // GET: Movies/Create
+        // GET: Categories/Create
         public IActionResult Create()
         {
             return View();
         }
 
-        // POST: Movies/Create
+        // POST: Categories/Create
+        // To protect from overposting attacks, enable the specific properties you want to bind to.
+        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Title,Year,Description,Rating,CategoryId")] Movie movie)
+        public async Task<IActionResult> Create([Bind("Id,Name")] Category category)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(movie);
+                _context.Add(category);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            return View(movie);
+            return View(category);
         }
 
-        // GET: Movies/Edit/5
+        // GET: Categories/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -93,22 +73,22 @@ namespace MovieApplication.Controllers
                 return NotFound();
             }
 
-            var movie = await _context.Movie.FindAsync(id);
-            if (movie == null)
+            var category = await _context.Category.FindAsync(id);
+            if (category == null)
             {
                 return NotFound();
             }
-            return View(movie);
+            return View(category);
         }
 
-        // POST: Movies/Edit/5
+        // POST: Categories/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Title,Year,Description,Rating,CategoryId")] Movie movie)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Name")] Category category)
         {
-            if (id != movie.Id)
+            if (id != category.Id)
             {
                 return NotFound();
             }
@@ -117,12 +97,12 @@ namespace MovieApplication.Controllers
             {
                 try
                 {
-                    _context.Update(movie);
+                    _context.Update(category);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!MovieExists(movie.Id))
+                    if (!CategoryExists(category.Id))
                     {
                         return NotFound();
                     }
@@ -133,10 +113,10 @@ namespace MovieApplication.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(movie);
+            return View(category);
         }
 
-        // GET: Movies/Delete/5
+        // GET: Categories/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -144,30 +124,30 @@ namespace MovieApplication.Controllers
                 return NotFound();
             }
 
-            var movie = await _context.Movie
+            var category = await _context.Category
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (movie == null)
+            if (category == null)
             {
                 return NotFound();
             }
 
-            return View(movie);
+            return View(category);
         }
 
-        // POST: Movies/Delete/5
+        // POST: Categories/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var movie = await _context.Movie.FindAsync(id);
-            _context.Movie.Remove(movie);
+            var category = await _context.Category.FindAsync(id);
+            _context.Category.Remove(category);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        private bool MovieExists(int id)
+        private bool CategoryExists(int id)
         {
-            return _context.Movie.Any(e => e.Id == id);
+            return _context.Category.Any(e => e.Id == id);
         }
     }
 }
