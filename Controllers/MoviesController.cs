@@ -28,17 +28,18 @@ namespace MovieApplication.Controllers
             //                                 orderby m.Id
             //                                 select m.Id;
 
-            var movies = await _context.Movie.Include(a => a.Category).ToListAsync();
+            var movies = from m in _context.Movie
+                            select m;
 
-            // if(!string.IsNullOrEmpty(searchString)){
-            //     movies = movies.Where(x => x.Title.Contains(searchString));
-            // }
+            if(!string.IsNullOrEmpty(searchString)){
+                movies = movies.Where(x => x.Title.Contains(searchString));
+            }
 
             // if(movieCategory != 0){
             //     movies = movies.Where(u => u.CategoryId == movieCategory);
             // }
 
-            MovieGenresViewModel movieGenreVM = new MovieGenresViewModel
+            MovieCategoryViewModel movieGenreVM = new MovieCategoryViewModel
             {
                 //Categories = new SelectList(await genreQuery.Distinct().ToListAsync()),
                 Movies = movies

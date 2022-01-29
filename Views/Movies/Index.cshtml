@@ -1,4 +1,4 @@
-@model MvcMovie.Models.MovieGenresViewModel
+@model MvcMovie.Models.MovieCategoryViewModel
 
 @{
     ViewData["Title"] = "Index";
@@ -9,6 +9,11 @@
 <p>
     <a asp-action="Create">Create New</a>
 </p>
+
+@using (Html.BeginForm()){
+    <p>Title: @Html.TextBox("SearchString")<br/>
+    <input type="submit" value="Filter"/></p>
+}
 
 @* <form asp-controller="Movies" asp-action="Index">
     <p>
@@ -25,20 +30,20 @@
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.Movies[0].Title)
+                @Html.DisplayNameFor(model => model.Movies.ElementAt(0).Title)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Movies[0].Description)
+                @Html.DisplayNameFor(model => model.Movies.ElementAt(0).Description)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Movies[0].Rating)
+                @Html.DisplayNameFor(model => model.Movies.ElementAt(0).Rating)
             </th>
 
             <th>
-                @Html.DisplayNameFor(model => model.Movies[0].Year)
+                @Html.DisplayNameFor(model => model.Movies.ElementAt(0).Year)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Movies[0].Category)
+                @Html.DisplayNameFor(model => model.Movies.ElementAt(0).Category)
             </th>
             <th></th>
         </tr>
