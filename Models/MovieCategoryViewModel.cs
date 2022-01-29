@@ -7,7 +7,7 @@ namespace MvcMovie.Models
     {
         public IQueryable<Movie>? Movies { get; set; }
         public SelectList? Categories { get; set; }
-        public string? MovieGenre { get; set; }
+        public string? MovieCategory { get; set; }
         public string? SearchString { get; set; }
     }
 }

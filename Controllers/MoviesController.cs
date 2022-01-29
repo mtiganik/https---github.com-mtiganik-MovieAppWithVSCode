@@ -23,10 +23,9 @@ namespace MovieApplication.Controllers
         public async Task<IActionResult> Index(int movieCategory, string searchString)
         {
             // LINQ gets a list of genres
-            // TODO: siin peab olema _context.Category
-            // IQueryable<int> genreQuery = from m in _context.Category
-            //                                 orderby m.Id
-            //                                 select m.Id;
+             IQueryable<int> CategoryQuery = from m in _context.Category
+                                             orderby m.Id
+                                             select m.Id;
 
             var movies = from m in _context.Movie
                             select m;
@@ -35,13 +34,17 @@ namespace MovieApplication.Controllers
                 movies = movies.Where(x => x.Title.Contains(searchString));
             }
 
-            // if(movieCategory != 0){
-            //     movies = movies.Where(u => u.CategoryId == movieCategory);
-            // }
+             if(movieCategory != 0){
+                 movies = movies.Where(u => u.CategoryId == movieCategory);
+             }
+
+            var Categories = new SelectList(_context.Category.ToList(),"Id","Name");
+            ViewData["Categories"] = Categories;
+
 
             MovieCategoryViewModel movieGenreVM = new MovieCategoryViewModel
             {
-                //Categories = new SelectList(await genreQuery.Distinct().ToListAsync()),
+                Categories = new SelectList(await CategoryQuery.Distinct().ToListAsync()),
                 Movies = movies
             };
 
