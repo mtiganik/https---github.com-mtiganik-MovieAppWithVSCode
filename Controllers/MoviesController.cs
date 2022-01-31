@@ -38,7 +38,7 @@ namespace MovieApplication.Controllers
                  movies = movies.Where(u => u.CategoryId == movieCategory);
              }
 
-            var Categories = _context.Category.ToList();
+            var Categories = new SelectList(_context.Category.ToList(),"Id","Name");
             ViewData["Categories"] = Categories;
 
 

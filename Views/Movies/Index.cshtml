@@ -13,8 +13,9 @@
 
 <form asp-controller="Movies" asp-action="Index">
     <p>
-        @Html.DropDownList("movieCategory", new SelectList((System.Collections.IEnumerable) ViewData["Categories"],"Id", "Name"), "All")
-        <input type=
+
+        <select>@Html.DropDownList("CategoryId", (IEnumerable<SelectListItem>)ViewData["Categories"], "All")</select>
+
         Title: <input type="text" name="SearchString"/>
         <input type="submit" value="Filter"/>
     </p>
